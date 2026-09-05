@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:inputType="phone"
+        android:textColor="@color/text_primary"
+        android:textSize="32sp"
+        android:hint="Enter number"
+        android:textColorHint="@color/text_secondary" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="24dp"
+        android:stretchColumns="0,1,2">
+
+        <TableRow>
+            <Button style="@style/DialKey" android:id="@+id/btn1" android:text="1" />
+            <Button style="@style/DialKey" android:id="@+id/btn2" android:text="2" />
+            <Button style="@style/DialKey" android:id="@+id/btn3" android:text="3" />
+        </TableRow>
+        <TableRow>
+            <Button style="@style/DialKey" android:id="@+id/btn4" android:text="4" />
+            <Button style="@style/DialKey" android:id="@+id/btn5" android:text="5" />
+            <Button style="@style/DialKey" android:id="@+id/btn6" android:text="6" />
+        </TableRow>
+        <TableRow>
+            <Button style="@style/DialKey" android:id="@+id/btn7" android:text="7" />
+            <Button style="@style/DialKey" android:id="@+id/btn8" android:text="8" />
+            <Button style="@style/DialKey" android:id="@+id/btn9" android:text="9" />
+        </TableRow>
+        <TableRow>
+            <Button style="@style/DialKey" android:id="@+id/btnStar" android:text="*" />
+            <Button style="@style/DialKey" android:id="@+id/btn0" android:text="0" />
+            <Button style="@style/DialKey" android:id="@+id/btnHash" android:text="#" />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp">
+
+        <ImageButton
+            android:id="@+id/btnCall"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/bg_call_button"
+            android:contentDescription="@string/call"
+            android:src="@android:drawable/sym_action_call" />
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/delete"
+            android:src="@android:drawable/ic_input_delete"
+            app:tint="@color/text_secondary" />
+
+    </LinearLayout>
+
+</LinearLayout>
