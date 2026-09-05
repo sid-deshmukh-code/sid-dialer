@@ -23,7 +23,13 @@ jobs:
           gradle-version: 8.7
 
       - name: Build debug APK
-        run: gradle assembleDebug
+        run: gradle assembleDebug --stacktrace > gradle_output.log 2>&1 || echo "BUILD_FAILED=1" >> $GITHUB_ENV
+
+      - name: Show error if build failed
+        if: env.BUILD_FAILED == '1'
+        run: |
+          echo "::error::$(tail -c 3000 gradle_output.log | tr '\n' '|')"
+          exit 1
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
