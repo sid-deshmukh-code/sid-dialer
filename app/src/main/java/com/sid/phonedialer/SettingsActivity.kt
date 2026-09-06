@@ -82,8 +82,20 @@ class SettingsActivity : AppCompatActivity() {
         sb.append("  (0 = default/enabled, 1 = explicitly enabled, 2 = disabled)\n")
 
         val incallIntent = Intent("android.telecom.InCallService").setPackage(packageName)
-        val incallMatches = packageManager.queryIntentServices(incallIntent, PackageManager.MATCH_DEFAULT_ONLY)
-        sb.append("InCallService intent matches: ${incallMatches.size}\n")
+        val incallMatchesNoFlags = packageManager.queryIntentServices(incallIntent, 0)
+        sb.append("InCallService intent matches (flags=0): ${incallMatchesNoFlags.size}\n")
+        incallMatchesNoFlags.forEach { sb.append("  - ${it.serviceInfo.name}\n") }
+
+        // List every service this package actually declares, as the system sees them
+        try {
+            val pkgInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SERVICES)
+            sb.append("All declared services (${pkgInfo.services?.size ?: 0}):\n")
+            pkgInfo.services?.forEach { svc ->
+                sb.append("  - ${svc.name} enabled=${svc.enabled} exported=${svc.exported} perm=${svc.permission}\n")
+            }
+        } catch (e: Exception) {
+            sb.append("Failed to list services: ${e.message}\n")
+        }
 
         // 3. Role state
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
