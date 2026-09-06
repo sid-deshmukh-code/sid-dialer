@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.sid.phonedialer.databinding.ActivitySettingsBinding
@@ -18,7 +19,14 @@ class SettingsActivity : AppCompatActivity() {
 
     private val roleRequest = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { refreshDefaultDialerStatus() }
+    ) { result ->
+        Toast.makeText(
+            this,
+            "Role request closed (result code: ${result.resultCode})",
+            Toast.LENGTH_SHORT
+        ).show()
+        refreshDefaultDialerStatus()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,17 +57,30 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun requestDefaultDialer() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val roleManager = getSystemService(RoleManager::class.java)
-            if (roleManager.isRoleAvailable(RoleManager.ROLE_DIALER) &&
-                !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
-            ) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val roleManager = getSystemService(RoleManager::class.java)
+                if (roleManager == null) {
+                    Toast.makeText(this, "RoleManager not available on this device", Toast.LENGTH_LONG).show()
+                    return
+                }
+                if (!roleManager.isRoleAvailable(RoleManager.ROLE_DIALER)) {
+                    Toast.makeText(this, "This device/ROM doesn't expose the Dialer role", Toast.LENGTH_LONG).show()
+                    return
+                }
+                if (roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
+                    Toast.makeText(this, "Already the default dialer", Toast.LENGTH_SHORT).show()
+                    refreshDefaultDialerStatus()
+                    return
+                }
                 roleRequest.launch(roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER))
+            } else {
+                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                    .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+                roleRequest.launch(intent)
             }
-        } else {
-            val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-                .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-            roleRequest.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed to request default dialer: ${e.javaClass.simpleName}: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
