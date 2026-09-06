@@ -2,6 +2,8 @@ package com.sid.phonedialer
 
 import android.app.role.RoleManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
@@ -56,6 +58,42 @@ class SettingsActivity : AppCompatActivity() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+
+        binding.btnDiagnostics.setOnClickListener { runDiagnostics() }
+    }
+
+    private fun runDiagnostics() {
+        val sb = StringBuilder()
+
+        // 1. Does our own package resolve as a candidate for ACTION_DIAL?
+        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:0000000000")).setPackage(packageName)
+        val dialMatches = packageManager.queryIntentActivities(dialIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        sb.append("ACTION_DIAL activities found: ${dialMatches.size}\n")
+        dialMatches.forEach { sb.append("  - ${it.activityInfo.name}\n") }
+
+        // 2. Is our InCallService declared and enabled?
+        val inCallComponent = android.content.ComponentName(this, com.sid.phonedialer.telecom.DialerInCallService::class.java)
+        val enabledSetting = try {
+            packageManager.getComponentEnabledSetting(inCallComponent)
+        } catch (e: Exception) {
+            -999
+        }
+        sb.append("InCallService enabled-setting code: $enabledSetting\n")
+        sb.append("  (0 = default/enabled, 1 = explicitly enabled, 2 = disabled)\n")
+
+        val incallIntent = Intent("android.telecom.InCallService").setPackage(packageName)
+        val incallMatches = packageManager.queryIntentServices(incallIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        sb.append("InCallService intent matches: ${incallMatches.size}\n")
+
+        // 3. Role state
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+            sb.append("Role available: ${roleManager?.isRoleAvailable(RoleManager.ROLE_DIALER)}\n")
+            sb.append("Role held: ${roleManager?.isRoleHeld(RoleManager.ROLE_DIALER)}\n")
+        }
+        sb.append("Android SDK: ${Build.VERSION.SDK_INT}, Manufacturer: ${Build.MANUFACTURER}, Model: ${Build.MODEL}")
+
+        binding.tvDiagnosticsResult.text = sb.toString()
     }
 
     override fun onResume() {
