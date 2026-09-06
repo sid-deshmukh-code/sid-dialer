@@ -34,6 +34,13 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         recordingManager = CallRecordingManager(applicationContext)
 
+        val versionName = try {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        } catch (e: Exception) {
+            "unknown"
+        }
+        binding.tvBuildVersion.text = "Installed version: $versionName"
+
         binding.btnSetDefault.setOnClickListener { requestDefaultDialer() }
 
         binding.switchRecording.isChecked = recordingManager.isEnabled()

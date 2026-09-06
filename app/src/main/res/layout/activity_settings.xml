@@ -6,6 +6,15 @@
     android:background="@color/background"
     android:padding="24dp">
 
+    <TextView
+        android:id="@+id/tvBuildVersion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/accent_green"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
     <Button
         android:id="@+id/btnSetDefault"
         android:layout_width="match_parent"
