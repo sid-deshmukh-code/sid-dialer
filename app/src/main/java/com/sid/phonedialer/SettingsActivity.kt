@@ -60,6 +60,60 @@ class SettingsActivity : AppCompatActivity() {
         })
 
         binding.btnDiagnostics.setOnClickListener { runDiagnostics() }
+
+        binding.btnMiuiAutostart.setOnClickListener { openMiuiScreen(MIUI_AUTOSTART_ACTIVITIES) }
+        binding.btnMiuiOtherPerms.setOnClickListener { openMiuiScreen(MIUI_OTHER_PERMS_ACTIVITIES) }
+        binding.btnDevOptions.setOnClickListener { openDeveloperOptions() }
+    }
+
+    companion object {
+        // Known MIUI Security Center screens across different MIUI versions.
+        // We try each until one resolves, since the exact activity name varies by MIUI version.
+        private val MIUI_AUTOSTART_ACTIVITIES = listOf(
+            "com.miui.securitycenter" to "com.miui.permcenter.autostart.AutoStartManagementActivity"
+        )
+        private val MIUI_OTHER_PERMS_ACTIVITIES = listOf(
+            "com.miui.securitycenter" to "com.miui.permcenter.permissions.PermissionsEditorActivity",
+            "com.miui.securitycenter" to "com.miui.permcenter.permissions.AppPermissionsEditorActivity"
+        )
+    }
+
+    private fun openMiuiScreen(candidates: List<Pair<String, String>>) {
+        for ((pkg, activity) in candidates) {
+            try {
+                val intent = Intent().apply {
+                    component = android.content.ComponentName(pkg, activity)
+                    putExtra("extra_pkgname", packageName)
+                }
+                startActivity(intent)
+                return
+            } catch (e: Exception) {
+                // try next candidate
+            }
+        }
+        // Fallback: this device isn't MIUI, or the screen name changed again —
+        // send the user to the app's normal system settings page instead.
+        Toast.makeText(this, "Couldn't find that MIUI screen — opening app settings instead", Toast.LENGTH_LONG).show()
+        try {
+            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Couldn't open app settings either: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openDeveloperOptions() {
+        try {
+            startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS))
+        } catch (e: Exception) {
+            Toast.makeText(
+                this,
+                "Developer options aren't unlocked yet. Go to Settings → About phone → tap 'MIUI version' 7 times.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun runDiagnostics() {

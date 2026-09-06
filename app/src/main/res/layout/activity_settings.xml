@@ -6,6 +6,12 @@
     android:background="@color/background"
     android:padding="24dp">
 
+    <Button
+        android:id="@+id/btnSetDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set as default phone app" />
+
     <TextView
         android:id="@+id/tvBuildVersion"
         android:layout_width="match_parent"
@@ -14,12 +20,6 @@
         android:textColor="@color/accent_green"
         android:textSize="14sp"
         android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/btnSetDefault"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Set as default phone app" />
 
     <TextView
         android:id="@+id/tvDefaultStatus"
@@ -34,11 +34,40 @@
         android:layout_marginVertical="24dp"
         android:background="@color/surface" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="On Xiaomi/MIUI phones, the button above often gets silently blocked unless these are enabled first:"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnMiuiAutostart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Autostart settings" />
+
+    <Button
+        android:id="@+id/btnMiuiOtherPerms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Open Other Permissions settings" />
+
+    <Button
+        android:id="@+id/btnDevOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Open Developer Options (for MIUI Optimization toggle)" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginTop="24dp">
 
         <TextView
             android:layout_width="0dp"
